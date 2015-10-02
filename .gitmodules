@@ -1,0 +1,3 @@
+[submodule "specc"]
+	path = specc
+	url = https://github.com/autopp/specc.git
