@@ -17,9 +17,9 @@ $(TARGET): strope.c strope.h
 clean:
 	rm -f $(TARGET) $(TEST_TARGET)
 
-test: specc/libspecc.so all
+test: libspecc all
 	@$(TEST_CC) $(TEST_CFLAGS) strope_spec.c -lspecc -lstrope -o $(TEST_TARGET)
 	@env LD_LIBRARY_PATH=$(CURDIR):$(CURDIR)/specc:$${LD_LIBRARY_PATH} ./$(TEST_TARGET)
 
-specc/libspecc.so:
-	$(MAKE) -C specc
+libspecc:
+	@$(MAKE) -C specc --no-print-directory
