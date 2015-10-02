@@ -5,27 +5,30 @@
 
 typedef struct StropeHeader {
   int ref_count;
-} Strope;
+} StropeHeader;
+
+struct StropeTree;
+typedef struct StropeTree StropeTree;
 
 typedef struct StropeLeaf {
-  StropeHeader header;
+  struct StropeHeader header;
   int length;
   char *body;
 } StropeLeaf;
 
 typedef struct StropeNode {
-  StropeHeader header;
+  struct StropeHeader header;
   StropeTree *left;
   StropeTree *right;
 } StropeNode;
 
-typedef struct StropeTree {
+struct StropeTree {
   union {
-    StropeHeader any;
+    struct StropeHeader any;
     StropeLeaf leaf;
     StropeNode node;
   } as;
-} StropeTree;
+};
 
 typedef struct Strope {
   StropeTree *tree;
