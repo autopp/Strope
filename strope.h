@@ -31,8 +31,7 @@ typedef struct Strope {
   StropeTree *tree;
 } Strope;
 
-Strope *Strope_new(void);
-Strope *Strope_new_with(const char *, size_t size);
+Strope *Strope_new(const char *str);
 void Strope_free(Strope *self);
 
 size_t Strope_length(Strope *self);
