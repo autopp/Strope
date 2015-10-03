@@ -29,14 +29,12 @@ specc_main {
     describe ("Strope_cstring()") {
       describe ("with \"The qui\"") {
         it ("returns \"The qui\" in C") {
-          pending_for_not_impemented();
           expect_that(strcmp(Strope_cstring(leaf), "The qui") == 0);
         }
       }
 
       describe ("with \"The quick brown fox\"") {
         it ("returns \"The quick brown fox\" in C") {
-          pending("not implemented");
           expect_that(strcmp(Strope_cstring(leaf), "The quick brown fox"));
         }
       }

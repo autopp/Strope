@@ -161,7 +161,35 @@ Strope *Strope_substring(Strope *self, size_t i, size_t j) {
   return NULL;
 }
 
+void StropeTree_dump_cstring(StropeTree *tree, char *buf) {
+  switch (tree->as.any.header.type) {
+  case StropeTree_LEAF: {
+    StropeLeaf *leaf = StropeTree_as_leaf(tree);
+    memcpy(buf, leaf->chunk->body + leaf->offset, leaf->length);
+    break;
+  }
+  case StropeTree_NODE: {
+    StropeNode *node = StropeTree_as_node(tree);
+    StropeTree_dump_cstring(node->left, buf);
+    StropeTree_dump_cstring(node->right, buf + node->header.weight);
+    break;
+  }
+  default:
+    StropeTree_invalid_type_error(tree);
+    break;
+  }
+}
+
 const char *Strope_cstring(Strope *self) {
-  // Not implemented
-  return NULL;
+  int length = Strope_length(self);
+  char *buf = malloc(sizeof(char) * (length + 1));
+
+  if (buf == NULL) {
+    return NULL;
+  }
+
+  StropeTree_dump_cstring(self->tree, buf);
+  buf[length] = '\0';
+
+  return buf;
 }
