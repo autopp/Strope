@@ -18,8 +18,8 @@ clean:
 	rm -f $(TARGET) $(TEST_TARGET)
 
 test: libspecc all
-	@$(TEST_CC) $(TEST_CFLAGS) strope_spec.c -lspecc -lstrope -o $(TEST_TARGET)
-	@env LD_LIBRARY_PATH=$(CURDIR):$(CURDIR)/specc:$${LD_LIBRARY_PATH} ./$(TEST_TARGET)
+	@$(TEST_CC) $(TEST_CFLAGS) strope_spec.c -lspecc -lstrope -o $(TEST_TARGET) 2>&1
+	@env LD_LIBRARY_PATH=$(CURDIR):$(CURDIR)/specc:$${LD_LIBRARY_PATH} ./$(TEST_TARGET) 2>&1
 
 libspecc:
 	@$(MAKE) -C specc --no-print-directory

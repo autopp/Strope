@@ -40,7 +40,7 @@ void Strope_free(Strope *self);
 size_t Strope_length(Strope *self);
 char Strope_at(Strope *self, size_t index);
 Strope *Strope_concat(Strope *self, Strope *other);
-Strope *Strope_substring(Strope *self, size_t i, size_t j);
+Strope *Strope_substring(Strope *self, size_t i, size_t n);
 const char *Strope_cstring(Strope *self);
 
 #endif
