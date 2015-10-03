@@ -4,16 +4,25 @@
 #include <stddef.h>
 
 typedef struct StropeHeader {
+  int type;
   int ref_count;
+  int weight;
 } StropeHeader;
 
 struct StropeTree;
 typedef struct StropeTree StropeTree;
 
+typedef struct StropeChunk {
+  int ref_count;
+  const char *body;
+  size_t size;
+} StropeChunk;
+
 typedef struct StropeLeaf {
   struct StropeHeader header;
-  int length;
-  char *body;
+  StropeChunk *chunk;
+  size_t offset;
+  size_t length;
 } StropeLeaf;
 
 typedef struct StropeNode {
@@ -24,7 +33,9 @@ typedef struct StropeNode {
 
 struct StropeTree {
   union {
-    struct StropeHeader any;
+    struct {
+      struct StropeHeader header;
+    } any;
     StropeLeaf leaf;
     StropeNode node;
   } as;
