@@ -51,7 +51,7 @@ specc_main {
       }
 
       describe ("with \"The quick brown fox\"") {
-        it ("returns 7") {
+        it ("returns 19") {
           pending_for_not_impemented();
           expect_that(Strope_length(node) == 19);
         }
