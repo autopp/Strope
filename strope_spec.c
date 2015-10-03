@@ -45,14 +45,12 @@ specc_main {
     describe ("Strope_length()") {
       describe ("with \"The qui\"") {
         it ("returns 7") {
-          pending_for_not_impemented();
           expect_that(Strope_length(leaf) == 7);
         }
       }
 
       describe ("with \"The quick brown fox\"") {
         it ("returns 19") {
-          pending_for_not_impemented();
           expect_that(Strope_length(node) == 19);
         }
       }

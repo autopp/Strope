@@ -73,15 +73,15 @@ static StropeTree *StropeLeaf_new(StropeChunk *chunk, size_t offset, size_t leng
   return self;
 }
 
-static int StropeTree_total_weight(StropeTree *tree) {
+static int StropeTree_length(StropeTree *tree) {
   switch (tree->as.any.header.type) {
   case StropeTree_LEAF:
-    return tree->as.leaf.header.weight;
+    return tree->as.any.header.weight;
     break;
 
   case StropeTree_NODE: {
     StropeNode *node = StropeTree_as_node(tree);
-    return node->left->as.any.header.weight + StropeTree_total_weight(node->right);
+    return node->header.weight + StropeTree_length(node->right);
     break;
   }
 
@@ -92,7 +92,7 @@ static int StropeTree_total_weight(StropeTree *tree) {
 }
 
 static StropeTree *StropeNode_new(StropeTree *left, StropeTree *right) {
-  int weight = StropeTree_total_weight(left);
+  int weight = StropeTree_length(left);
   StropeTree *self = StropeTree_new(StropeTree_NODE, weight);
 
   StropeNode *node = StropeTree_as_node(self);
@@ -148,8 +148,7 @@ Strope *Strope_concat(Strope *self, Strope *other) {
 }
 
 size_t Strope_length(Strope *self) {
-  // Not implemented
-  return -1;
+  return StropeTree_length(self->tree);
 }
 
 char Strope_at(Strope *self, size_t index) {
