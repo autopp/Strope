@@ -215,9 +215,43 @@ char Strope_at(Strope *self, size_t index) {
   return StropeTree_at(self->tree, index);
 }
 
-Strope *Strope_substring(Strope *self, size_t i, size_t j) {
-  // Not implemented
-  return NULL;
+static StropeTree *StropeTree_substring(StropeTree *self, size_t i, size_t n) {
+  if (StropeTree_type(self) == StropeTree_LEAF) {
+    StropeLeaf *leaf = StropeTree_as_leaf(self);
+
+    if (i == 0 && n == leaf->header.weight) {
+      return self;
+    } else {
+      StropeChunk *chunk = leaf->chunk;
+
+      StropeChunk_inc_ref(chunk);
+
+      return StropeLeaf_new(chunk, leaf->offset + i, n);
+    }
+  }
+
+  StropeNode *node = StropeTree_as_node(self);
+  int weight = node->header.weight;
+
+  if (i >= weight) {
+    return StropeTree_substring(node->right, i - weight, n);
+  } else {
+    if (weight > i + n) {
+      return StropeTree_substring(node->left, i, n);
+    } else {
+      StropeTree *left = StropeTree_substring(node->left, i, weight - i);
+      StropeTree *right = StropeTree_substring(node->right, 0, n - (weight - i));
+      return StropeNode_new(left, right);
+    }
+  }
+}
+
+Strope *Strope_substring(Strope *self, size_t i, size_t n) {
+  StropeTree *tree = StropeTree_substring(self->tree, i, n);
+
+  StropeTree_inc_ref(tree);
+
+  return Strope_new_with(tree);
 }
 
 void StropeTree_dump_cstring(StropeTree *tree, char *buf) {

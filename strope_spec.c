@@ -86,7 +86,6 @@ specc_main {
       describe ("with \"The quick brown fox\"") {
         describe ("and 8, 4") {
           it ("returns \"k br\"") {
-            pending_for_not_impemented();
             Strope *sub = Strope_substring(node, 8, 4);
             expect_that(strcmp(Strope_cstring(sub), "k br") == 0);
           }
@@ -94,7 +93,6 @@ specc_main {
 
         describe ("and 2, 15") {
           it ("returns \"e quick brown f\"") {
-            pending_for_not_impemented();
             Strope *sub = Strope_substring(node, 2, 15);
             expect_that(strcmp(Strope_cstring(sub), "e quick brown f") == 0);
           }
