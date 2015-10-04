@@ -5,6 +5,15 @@
 
 #define malloc_sizeof(type) (malloc(sizeof(type)))
 
+static void StropeChunk_free(StropeChunk *self);
+
+#define StropeChunk_inc_ref(chunk) ((chunk)->ref_count++)
+static void StropeChunk_dec_ref(StropeChunk *chunk) {
+  if (--chunk->ref_count == 0) {
+    StropeChunk_free(chunk);
+  }
+}
+
 #define StropeTree_LEAF (0)
 #define StropeTree_NODE (1)
 
@@ -12,6 +21,14 @@
 
 #define StropeTree_as_leaf(tree) (&(tree)->as.leaf)
 #define StropeTree_as_node(tree) (&(tree)->as.node)
+
+static void StropeTree_free(StropeTree *self);
+#define StropeTree_inc_ref(tree) ((tree)->as.any.header.ref_count++)
+static void StropeTree_dec_ref(StropeTree *tree) {
+  if (--tree->as.any.header.ref_count == 0) {
+    StropeTree_free(tree);
+  }
+}
 
 static void StropeTree_invalid_type_error(StropeTree *tree) __attribute__((__noreturn__));
 
@@ -69,6 +86,9 @@ static StropeTree *StropeLeaf_new(StropeChunk *chunk, size_t offset, size_t leng
   StropeTree *self = StropeTree_new(StropeTree_LEAF, length);
 
   self->as.leaf.chunk = chunk;
+
+  StropeChunk_inc_ref(chunk);
+
   self->as.leaf.offset = offset;
   self->as.leaf.length = length;
 
@@ -100,7 +120,9 @@ static StropeTree *StropeNode_new(StropeTree *left, StropeTree *right) {
   StropeNode *node = StropeTree_as_node(self);
 
   node->left = left;
+  StropeTree_inc_ref(left);
   node->right = right;
+  StropeTree_inc_ref(right);
 
   return self;
 }
@@ -113,6 +135,7 @@ static Strope *Strope_new_with(StropeTree *tree) {
   }
 
   self->tree = tree;
+  StropeTree_inc_ref(tree);
 
   return self;
 }
@@ -134,9 +157,28 @@ Strope *Strope_new(const char *str) {
   return Strope_new_with(tree);
 }
 
+static void StropeTree_free(StropeTree *self) {
+  if (self->as.any.header.ref_count != 0) {
+    fprintf(stderr, "free chunk referenced other\n");
+    exit(1);
+  }
+
+  if (StropeTree_type(self) == StropeTree_LEAF) {
+    StropeLeaf *leaf = StropeTree_as_leaf(self);
+    StropeChunk_dec_ref(leaf->chunk);
+  } else {
+    StropeNode *node = StropeTree_as_node(self);
+
+    StropeTree_dec_ref(node->left);
+    StropeTree_dec_ref(node->right);
+  }
+
+  free(self);
+}
 
 void Strope_free(Strope *self) {
-  // Not implemented
+  StropeTree_dec_ref(self->tree);
+  free(self);
 }
 
 Strope *Strope_concat(Strope *self, Strope *other) {
@@ -153,7 +195,7 @@ size_t Strope_length(Strope *self) {
   return StropeTree_length(self->tree);
 }
 
-char StropeTree_at(StropeTree *self, size_t index) {
+static char StropeTree_at(StropeTree *self, size_t index) {
   if (StropeTree_type(self) == StropeTree_LEAF) {
     StropeLeaf *leaf = StropeTree_as_leaf(self);
 
@@ -172,7 +214,6 @@ char StropeTree_at(StropeTree *self, size_t index) {
 char Strope_at(Strope *self, size_t index) {
   return StropeTree_at(self->tree, index);
 }
-
 
 Strope *Strope_substring(Strope *self, size_t i, size_t j) {
   // Not implemented
