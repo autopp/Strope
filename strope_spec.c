@@ -1,5 +1,6 @@
 #include <specc.h>
 #include "strope.h"
+#include <stdlib.h>
 #include <string.h>
 
 #define pending_for_not_impemented() pending("not implemented")
@@ -27,15 +28,26 @@ specc_main {
     }
 
     describe ("Strope_cstring()") {
+      const char *cstr = NULL;
+
+      after {
+        if (cstr != NULL) {
+          free((char *)cstr);
+          cstr = NULL;
+        }
+      }
+
       describe ("with \"The qui\"") {
         it ("returns \"The qui\" in C") {
-          expect_that(strcmp(Strope_cstring(leaf), "The qui") == 0);
+          cstr = Strope_cstring(leaf);
+          expect_that(strcmp(cstr, "The qui") == 0);
         }
       }
 
       describe ("with \"The quick brown fox\"") {
         it ("returns \"The quick brown fox\" in C") {
-          expect_that(strcmp(Strope_cstring(leaf), "The quick brown fox"));
+          cstr = Strope_cstring(node);
+          expect_that(strcmp(cstr, "The quick brown fox") == 0);
         }
       }
     }
@@ -84,17 +96,34 @@ specc_main {
 
     describe ("Strope_substring()") {
       describe ("with \"The quick brown fox\"") {
+        Strope *sub = NULL;
+        const char *sub_cstr = NULL;
+
+        after {
+          if (sub != NULL) {
+            Strope_free(sub);
+            sub = NULL;
+          }
+
+          if (sub_cstr != NULL) {
+            free((char *)sub_cstr);
+            sub_cstr = NULL;
+          }
+        }
+
         describe ("and 8, 4") {
           it ("returns \"k br\"") {
-            Strope *sub = Strope_substring(node, 8, 4);
-            expect_that(strcmp(Strope_cstring(sub), "k br") == 0);
+            sub = Strope_substring(node, 8, 4);
+            sub_cstr = Strope_cstring(sub);
+            expect_that(strcmp(sub_cstr, "k br") == 0);
           }
         }
 
         describe ("and 2, 15") {
           it ("returns \"e quick brown f\"") {
-            Strope *sub = Strope_substring(node, 2, 15);
-            expect_that(strcmp(Strope_cstring(sub), "e quick brown f") == 0);
+            sub = Strope_substring(node, 2, 15);
+            sub_cstr = Strope_cstring(sub);
+            expect_that(strcmp(sub_cstr, "e quick brown f") == 0);
           }
         }
       }
