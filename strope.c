@@ -159,7 +159,7 @@ Strope *Strope_new(const char *str) {
 
 static void StropeTree_free(StropeTree *self) {
   if (self->as.any.header.ref_count != 0) {
-    fprintf(stderr, "free chunk referenced other\n");
+    fprintf(stderr, "free tree referenced other\n");
     exit(1);
   }
 
@@ -224,8 +224,6 @@ static StropeTree *StropeTree_substring(StropeTree *self, size_t i, size_t n) {
     } else {
       StropeChunk *chunk = leaf->chunk;
 
-      StropeChunk_inc_ref(chunk);
-
       return StropeLeaf_new(chunk, leaf->offset + i, n);
     }
   }
@@ -248,8 +246,6 @@ static StropeTree *StropeTree_substring(StropeTree *self, size_t i, size_t n) {
 
 Strope *Strope_substring(Strope *self, size_t i, size_t n) {
   StropeTree *tree = StropeTree_substring(self->tree, i, n);
-
-  StropeTree_inc_ref(tree);
 
   return Strope_new_with(tree);
 }

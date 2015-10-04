@@ -5,26 +5,36 @@
 
 #define pending_for_not_impemented() pending("not implemented")
 
+#define Strope_free_and_reset_if_not_NULL(p)\
+  do {\
+    if (p != NULL) {\
+      Strope_free(p);\
+      p = NULL;\
+    }\
+  } while (0)
+
 specc_main {
   describe ("Strope") {
     Strope *leaf = NULL;
+    Strope *leaf_other1 = NULL;
+    Strope *leaf_other2 = NULL;
+    Strope *middle = NULL;
     Strope *node = NULL;
 
     before {
       leaf = Strope_new("The qui");
-      node = Strope_concat(Strope_concat(leaf, Strope_new("ck brown")), Strope_new(" fox"));
+      leaf_other1 = Strope_new("ck brown");
+      leaf_other2 = Strope_new(" fox");
+      middle = Strope_concat(leaf, leaf_other1);
+      node = Strope_concat(middle, leaf_other2);
     }
 
     after {
-      if (leaf != NULL) {
-        Strope_free(leaf);
-        leaf = NULL;
-      }
-
-      if (node != NULL) {
-        Strope_free(node);
-        node = NULL;
-      }
+      Strope_free_and_reset_if_not_NULL(leaf);
+      Strope_free_and_reset_if_not_NULL(leaf_other1);
+      Strope_free_and_reset_if_not_NULL(leaf_other2);
+      Strope_free_and_reset_if_not_NULL(middle);
+      Strope_free_and_reset_if_not_NULL(node);
     }
 
     describe ("Strope_cstring()") {
@@ -100,10 +110,7 @@ specc_main {
         const char *sub_cstr = NULL;
 
         after {
-          if (sub != NULL) {
-            Strope_free(sub);
-            sub = NULL;
-          }
+          Strope_free_and_reset_if_not_NULL(sub);
 
           if (sub_cstr != NULL) {
             free((char *)sub_cstr);
