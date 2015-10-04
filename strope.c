@@ -254,7 +254,7 @@ Strope *Strope_substring(Strope *self, size_t i, size_t n) {
   return Strope_new_with(tree);
 }
 
-void StropeTree_dump_cstring(StropeTree *tree, char *buf) {
+static void StropeTree_dump_cstring(StropeTree *tree, char *buf) {
   switch (tree->as.any.header.type) {
   case StropeTree_LEAF: {
     StropeLeaf *leaf = StropeTree_as_leaf(tree);
