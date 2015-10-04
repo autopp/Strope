@@ -57,7 +57,6 @@ specc_main {
     describe ("Strope_at()") {
       describe ("with \"The qui\" and 4") {
         it ("returns 'q'") {
-          pending_for_not_impemented();
           expect_that(Strope_at(leaf, 4) == 'q');
         }
       }
@@ -65,21 +64,18 @@ specc_main {
       describe ("with \"The quick brown fox\"") {
         describe ("and 4") {
           it ("returns 'q'") {
-            pending_for_not_impemented();
             expect_that(Strope_at(node, 4) == 'q');
           }
         }
 
         describe ("and 10") {
           it ("returns 'b'") {
-            pending_for_not_impemented();
             expect_that(Strope_at(node, 10) == 'b');
           }
         }
 
         describe ("and 16") {
           it ("returns 'f'") {
-            pending_for_not_impemented();
             expect_that(Strope_at(node, 16) == 'f');
           }
         }

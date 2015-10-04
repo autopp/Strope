@@ -8,6 +8,8 @@
 #define StropeTree_LEAF (0)
 #define StropeTree_NODE (1)
 
+#define StropeTree_type(tree) ((tree)->as.any.header.type)
+
 #define StropeTree_as_leaf(tree) (&(tree)->as.leaf)
 #define StropeTree_as_node(tree) (&(tree)->as.node)
 
@@ -151,8 +153,24 @@ size_t Strope_length(Strope *self) {
   return StropeTree_length(self->tree);
 }
 
+char StropeTree_at(StropeTree *self, size_t index) {
+  if (StropeTree_type(self) == StropeTree_LEAF) {
+    StropeLeaf *leaf = StropeTree_as_leaf(self);
+
+    return leaf->chunk->body[leaf->offset + index];
+  } else {
+    StropeNode *node = StropeTree_as_node(self);
+
+    if (index < node->header.weight) {
+      return StropeTree_at(node->left, index);
+    } else {
+      return StropeTree_at(node->right, index - node->header.weight);
+    }
+  }
+}
+
 char Strope_at(Strope *self, size_t index) {
-  return '\0';
+  return StropeTree_at(self->tree, index);
 }
 
 
